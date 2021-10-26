@@ -34,14 +34,14 @@ class ArraySimpleCache implements CacheInterface {
      *
      * @var mixed[] $cache
      */
-    private array $cache;
+    protected array $cache;
 
     /**
      * Stores the timestamps of when cache items should expire.
      *
      * @var int[] $expirations
      */
-    private array $expirations;
+    protected array $expirations;
 
     /**
      * Class constructor.

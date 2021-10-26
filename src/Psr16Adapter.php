@@ -36,7 +36,7 @@ class Psr16Adapter implements CacheInterface {
      *
      * @var \Psr\Cache\CacheItemPoolInterface $cache
      */
-    private CacheItemPoolInterface $cache;
+    protected CacheItemPoolInterface $cache;
 
     /**
      * Class constructor.
