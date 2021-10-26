@@ -41,7 +41,7 @@ trait SimpleCacheTrait {
      * @param string|\Stringable $key
      * @return string
      */
-    private function validateKey($key): string {
+    protected function validateKey($key): string {
         // Ensure key can be typecast to string
         if (!is_string($key) && !($key instanceof Stringable)) {
             throw new InvalidArgumentException("Cache key must be a string");
@@ -77,7 +77,7 @@ trait SimpleCacheTrait {
      * @param iterable $keys
      * @return string[]
      */
-    private function validateKeys($keys): array {
+    protected function validateKeys($keys): array {
         // Ensure iterable objects are cast to arrays
         $keys = $this->validateIterable($keys);
 
@@ -100,7 +100,7 @@ trait SimpleCacheTrait {
      * @param iterable $iterable
      * @return array
      */
-    private function validateIterable($iterable): array {
+    protected function validateIterable($iterable): array {
         // No processing for arrays required
         if (is_array($iterable)) {
             return $iterable;
@@ -128,7 +128,7 @@ trait SimpleCacheTrait {
      * @param int|\DateInterval $ttl
      * @return int|null
      */
-    private function validateTtl($ttl): int|null {
+    protected function validateTtl($ttl): int|null {
         if ($ttl === null) {
             return null;
         } elseif ($ttl instanceof DateInterval) {
