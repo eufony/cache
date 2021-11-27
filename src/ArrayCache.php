@@ -51,7 +51,14 @@ class ArrayCache extends AbstractCache
     public function getItem($key): CacheItemInterface
     {
         $key = $this->psr6_validateKey($key);
-        return $this->hasItem($key) ? $this->items[$key] : new CacheItem($key);
+
+        if ($this->hasItem($key)) {
+            return $this->items[$key];
+        } else {
+            // Delete expired items
+            $this->deleteItem($key);
+            return new CacheItem($key);
+        }
     }
 
     /**
@@ -68,7 +75,7 @@ class ArrayCache extends AbstractCache
     public function hasItem($key): bool
     {
         $key = $this->psr6_validateKey($key);
-        return array_key_exists($key, $this->items);
+        return array_key_exists($key, $this->items) && !$this->items[$key]->expired();
     }
 
     /**
