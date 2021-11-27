@@ -17,7 +17,6 @@
     "psr/simple-cache": "^1.0"
   },
   "require-dev": {
-    "brianium/paratest": "^6.3",
     "phpunit/phpunit": "^9.5"
   },
   "suggest": {
@@ -39,7 +38,7 @@
   },
   "scripts": {
     "test": [
-      "paratest -c tests/Unit/phpunit.xml.dist"
+      "phpunit -c tests/Unit/phpunit.xml.dist"
     ]
   },
   "config": {
