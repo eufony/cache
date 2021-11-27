@@ -19,17 +19,19 @@
 
 namespace Tests\Unit;
 
-use Eufony\Cache\ArraySimpleCache;
+use Eufony\Cache\ArrayCache;
 use Psr\SimpleCache\CacheInterface;
 
 /**
- * Unit tests for `\Eufony\Cache\ArraySimpleCache`.
+ * PSR-16 unit tests for `\Eufony\Cache\ArrayCache`.
  */
-class ArraySimpleCacheTest extends AbstractSimpleCacheTest {
-
-    /** @inheritdoc */
-    public function getCache(): CacheInterface {
-        return new ArraySimpleCache();
+class ArraySimpleCacheTest extends AbstractSimpleCacheTest
+{
+    /**
+     * @inheritDoc
+     */
+    public function getCache(): CacheInterface
+    {
+        return new ArrayCache();
     }
-
 }

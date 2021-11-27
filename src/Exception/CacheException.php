@@ -20,10 +20,8 @@
 namespace Eufony\Cache;
 
 /**
- * Thrown whenever an invalid argument is passed to any of the caching methods.
+ * Thrown whenever a cache-related exception occurs.
  */
-class InvalidArgumentException extends \InvalidArgumentException implements
-    \Psr\SimpleCache\InvalidArgumentException,
-    \Psr\Cache\InvalidArgumentException
+class CacheException extends \RuntimeException implements \Psr\Cache\CacheException
 {
 }

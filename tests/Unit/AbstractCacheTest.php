@@ -19,31 +19,25 @@
 
 namespace Tests\Unit;
 
-use Cache\Adapter\PHPArray\ArrayCachePool;
-use Eufony\Cache\Psr16Adapter;
+use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
-use Psr\SimpleCache\CacheInterface;
 
 /**
- * Unit tests for `\Eufony\Cache\Psr16Adapter`.
+ * Provides an abstract PSR-6 implementation tester.
  */
-class Psr16AdapterTest extends AbstractSimpleCacheTest {
+abstract class AbstractCacheTest extends TestCase
+{
+    /**
+     * The PSR-6 cache implementation to test.
+     *
+     * @var \Psr\Cache\CacheItemPoolInterface $cache
+     */
+    protected CacheItemPoolInterface $cache;
 
     /**
-     * The internal PSR-6 cache implementation used to test the PSR-16 adapter.
+     * Returns a new instance of a PSR-6 cache implementation to test.
      *
-     * @var \Psr\Cache\CacheItemPoolInterface $internalCache
+     * @return \Psr\Cache\CacheItemPoolInterface
      */
-    protected CacheItemPoolInterface $internalCache;
-
-    /** @inheritdoc */
-    public function getCache(): CacheInterface {
-        $this->internalCache = new ArrayCachePool();
-        return new Psr16Adapter($this->internalCache);
-    }
-
-    public function testGetInternalCachePool() {
-        $this->assertSame($this->internalCache, $this->cache->cache());
-    }
-
+    abstract public function getCache(): CacheItemPoolInterface;
 }

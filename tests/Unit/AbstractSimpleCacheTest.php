@@ -27,8 +27,8 @@ use Psr\SimpleCache\InvalidArgumentException;
 /**
  * Provides an abstract PSR-16 implementation tester.
  */
-abstract class AbstractSimpleCacheTest extends TestCase {
-
+abstract class AbstractSimpleCacheTest extends TestCase
+{
     /**
      * The PSR-16 cache implementation to test.
      *
@@ -44,13 +44,36 @@ abstract class AbstractSimpleCacheTest extends TestCase {
     abstract public function getCache(): CacheInterface;
 
     /**
+     * Valid TTL data provider.
+     *
+     * Data provider for PSR-16 methods that change their behaviour when cache
+     * items expire.
+     * Returns a valid TTL parameter and whether the TTL expires after 2
+     * seconds for each data set.
+     *
+     * @return mixed[][]
+     */
+    public function data_ttls(): array
+    {
+        return [
+            [1, true],
+            [5, false],
+            [new DateInterval("PT1S"), true],
+            [new DateInterval("PT5S"), false],
+        ];
+    }
+
+    /**
+     * Invalid cache key data provider.
+     *
      * Data provider for PSR-16 methods that require a cache key parameter.
      * Returns the method name, an invalid cache key argument, and an array of
      * additional method arguments for each data set.
      *
      * @return mixed[][]
      */
-    public function invalidKeys(): array {
+    public function data_invalidKeys(): array
+    {
         $methods = ["get", "set", "delete", "getMultiple", "setMultiple", "deleteMultiple", "has"];
         $invalid_keys = [null, 0, "", "{}()/\@:"];
 
@@ -75,18 +98,19 @@ abstract class AbstractSimpleCacheTest extends TestCase {
             }
         }
 
-        // Return result
         return $data;
     }
 
     /**
      * Data provider for PSR-16 methods that require a TTL parameter.
+     *
      * Returns the method name and an array of method arguments for each data
      * set.
      *
      * @return mixed[][]
      */
-    public function ttlMethods(): array {
+    public function data_ttlMethods(): array
+    {
         return [
             ["set", ["foo", "bar"]],
             ["setMultiple", [["foo"], ["bar"]]],
@@ -94,30 +118,15 @@ abstract class AbstractSimpleCacheTest extends TestCase {
     }
 
     /**
-     * Data provider for PSR-16 methods that change their behaviour when cache
-     * items expire.
-     * Returns a valid TTL parameter and whether the TTL expires after 2
-     * seconds.
-     *
-     * @return mixed[][]
-     */
-    public function ttls(): array {
-        return [
-            [1, true],
-            [5, false],
-            [new DateInterval("PT1S"), true],
-            [new DateInterval("PT5S"), false],
-        ];
-    }
-
-    /**
      * Data provider for PSR-16 methods that operate on multiple cache items.
+     *
      * Returns the method name and an array of method arguments for each data
      * set.
      *
      * @return string[][]
      */
-    public function multipleMethods(): array {
+    public function data_multipleMethods(): array
+    {
         return [
             ["getMultiple", [["foo"]]],
             ["setMultiple", [["foo"], ["bar"]]],
@@ -125,50 +134,71 @@ abstract class AbstractSimpleCacheTest extends TestCase {
         ];
     }
 
-    /** @inheritdoc */
-    protected function setUp(): void {
+    /**
+     * @inheritDoc
+     */
+    protected function setUp(): void
+    {
         $this->cache = $this->getCache();
     }
 
     /**
-     * @dataProvider invalidKeys
+     * @dataProvider data_invalidKeys
      */
-    public function testInvalidKeys(string $method, mixed $key, array $args) {
+    public function test_invalidKeys(string $method, mixed $key, array $args)
+    {
         $this->expectException(InvalidArgumentException::class);
         $this->cache->$method($key, ...$args);
     }
 
     /**
-     * @dataProvider ttlMethods
+     * @dataProvider data_ttlMethods
      */
-    public function testInvalidTtl(string $method, array $args) {
+    public function test_invalidTtl(string $method, array $args)
+    {
         $args[] = "ttl";
         $this->expectException(InvalidArgumentException::class);
         $this->cache->$method(...$args);
     }
 
     /**
-     * @dataProvider multipleMethods
+     * @dataProvider data_multipleMethods
      */
-    public function testInvalidIterable(string $method, array $args) {
+    public function test_invalidIterable(string $method, array $args)
+    {
         $args[0] = "foo";
         $this->expectException(InvalidArgumentException::class);
         $this->cache->$method(...$args);
     }
 
-    public function testSetGet() {
+    public function test_setGet()
+    {
         $this->cache->set("foo", "bar");
         $this->assertEquals("bar", $this->cache->get("foo"));
+    }
+
+    /**
+     * @depends test_setGet
+     */
+    public function test_setGet_notFound()
+    {
         $this->assertNull($this->cache->get("not-found"));
         $this->assertEquals("chickpeas", $this->cache->get("not-found", "chickpeas"));
     }
 
+    public function test_setGet_null()
+    {
+        $this->cache->set("foo", null);
+        $this->assertEquals(null, $this->cache->get("foo"));
+    }
+
     /**
-     * @depends      testSetGet
-     * @dataProvider ttls
+     * @depends      test_setGet
+     * @dataProvider data_ttls
      * @group slow
      */
-    public function testSetExpire(int|DateInterval $ttl, bool $expired) {
+    public function test_set_expire(int|DateInterval $ttl, bool $expired)
+    {
         $this->cache->set("foo", "bar", $ttl);
         $expected = $expired ? null : "bar";
 
@@ -179,29 +209,32 @@ abstract class AbstractSimpleCacheTest extends TestCase {
     }
 
     /**
-     * @depends testSetGet
+     * @depends test_setGet
      */
-    public function testDelete() {
+    public function test_delete()
+    {
         $this->cache->set("foo", "bar");
         $this->cache->delete("foo");
         $this->assertNull($this->cache->get("foo"));
     }
 
     /**
-     * @depends testSetGet
+     * @depends test_setGet
      */
-    public function testClearCache() {
+    public function test_clear()
+    {
         $this->cache->set("foo", "bar");
         $this->cache->clear();
         $this->assertNull($this->cache->get("foo"));
     }
 
-    public function testSetGetMultiple() {
+    public function test_setGetMultiple()
+    {
         $keys = ["key1", "key2", "key3"];
         $values = array_combine($keys, ["value1", "value2", "value3"]);
 
         $this->cache->setMultiple($values);
-        $result = (array)$this->cache->getMultiple($keys);
+        $result = (array) $this->cache->getMultiple($keys);
 
         $this->assertEquals($keys, array_keys($result));
 
@@ -210,7 +243,8 @@ abstract class AbstractSimpleCacheTest extends TestCase {
         }
     }
 
-    public function testSetGetMultipleGenerator() {
+    public function test_setGetMultiple_generator()
+    {
         $keys = ["key1", "key2", "key3"];
         $values = array_combine($keys, ["value1", "value2", "value3"]);
 
@@ -221,7 +255,7 @@ abstract class AbstractSimpleCacheTest extends TestCase {
         };
 
         $this->cache->setMultiple($generator($values));
-        $result = (array)$this->cache->getMultiple($generator($keys));
+        $result = (array) $this->cache->getMultiple($generator($keys));
 
         $this->assertEquals($keys, array_keys($result));
 
@@ -231,11 +265,12 @@ abstract class AbstractSimpleCacheTest extends TestCase {
     }
 
     /**
-     * @depends      testSetGetMultiple
-     * @dataProvider ttls
+     * @depends      test_setGetMultiple
+     * @dataProvider data_ttls
      * @group slow
      */
-    public function testSetMultipleExpire(int|DateInterval $ttl, bool $expired) {
+    public function test_setMultiple_expire(int|DateInterval $ttl, bool $expired)
+    {
         $keys = ["key1", "key2", "key3"];
         $values = array_combine($keys, ["value1", "value2", "value3"]);
 
@@ -253,9 +288,10 @@ abstract class AbstractSimpleCacheTest extends TestCase {
     }
 
     /**
-     * @depends testSetGetMultiple
+     * @depends test_setGetMultiple
      */
-    public function testDeleteMultiple() {
+    public function test_deleteMultiple()
+    {
         $keys = ["key1", "key2", "key3"];
         $values = array_combine($keys, ["value1", "value2", "value3"]);
 
@@ -275,9 +311,10 @@ abstract class AbstractSimpleCacheTest extends TestCase {
     }
 
     /**
-     * @depends testSetGetMultiple
+     * @depends test_setGetMultiple
      */
-    public function testDeleteMultipleGenerator() {
+    public function test_deleteMultiple_generator()
+    {
         $keys = ["key1", "key2", "key3"];
         $values = array_combine($keys, ["value1", "value2", "value3"]);
 
@@ -302,20 +339,22 @@ abstract class AbstractSimpleCacheTest extends TestCase {
     }
 
     /**
-     * @depends testSetGet
+     * @depends test_setGet
      */
-    public function testHas() {
+    public function test_has()
+    {
         $this->cache->set("foo", "bar");
         $this->assertTrue($this->cache->has("foo"));
         $this->assertFalse($this->cache->has("not-found"));
     }
 
     /**
-     * @depends      testSetGet
-     * @dataProvider ttls
+     * @depends      test_setGet
+     * @dataProvider data_ttls
      * @group slow
      */
-    public function testHasExpire(int|DateInterval $ttl, bool $expired) {
+    public function test_has_expire(int|DateInterval $ttl, bool $expired)
+    {
         $this->cache->set("foo", "bar", $ttl);
         $expected = !$expired;
 
@@ -324,5 +363,4 @@ abstract class AbstractSimpleCacheTest extends TestCase {
 
         $this->assertEquals($expected, $this->cache->has("foo"));
     }
-
 }
