@@ -140,4 +140,16 @@ class CacheItem implements CacheItemInterface
         $this->expiration = $expiration;
         return $this;
     }
+
+    /**
+     * Returns whether this item has expired.
+     *
+     * A cache item with an unset (`null`) expiration time will be cached forever.
+     *
+     * @return bool
+     */
+    public function expired(): bool
+    {
+        return $this->expiration !== null && $this->expiration > time();
+    }
 }

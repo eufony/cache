@@ -36,56 +36,38 @@ class NullSimpleCacheTest extends AbstractSimpleCacheTest
         return new NullCache();
     }
 
-    public function test_setGet()
+    /**
+     * @dataProvider data_validCacheItems
+     */
+    public function test_setGet(mixed $value)
     {
-        $this->cache->set("foo", "bar");
-        $this->assertNull($this->cache->get("foo"));
+        $this->cache->set("foo", $value);
+        $this->assertEquals(null, $this->cache->get("foo"));
     }
 
     /**
      * @depends      test_setGet
+     * @depends      test_setGet_notFound
      * @dataProvider data_ttls
      * @group slow
      */
-    public function test_set_expire(int|DateInterval $ttl, bool $expired)
+    public function test_set_expire(int|DateInterval|null $ttl, bool $expired)
     {
         $this->cache->set("foo", "bar", $ttl);
-        $expected = null;
 
         // Wait 2 seconds so the cache expires
         sleep(2);
 
-        $this->assertEquals($expected, $this->cache->get("foo"));
+        $this->assertNull($this->cache->get("foo"));
     }
 
-    public function test_setGetMultiple()
+    /**
+     * @dataProvider data_multipleValues
+     */
+    public function test_setGetMultiple(array $keys, array $values, $generator, bool $useGenerator)
     {
-        $keys = ["key1", "key2", "key3"];
-        $values = array_combine($keys, ["value1", "value2", "value3"]);
-
         $this->cache->setMultiple($values);
-        $result = (array) $this->cache->getMultiple($keys);
-
-        $this->assertEquals($keys, array_keys($result));
-
-        foreach ($result as $value) {
-            $this->assertNull($value);
-        }
-    }
-
-    public function test_setGetMultiple_generator()
-    {
-        $keys = ["key1", "key2", "key3"];
-        $values = array_combine($keys, ["value1", "value2", "value3"]);
-
-        $generator = function ($array) {
-            foreach ($array as $key => $value) {
-                yield $key => $value;
-            }
-        };
-
-        $this->cache->setMultiple($generator($values));
-        $result = (array) $this->cache->getMultiple($generator($keys));
+        $result = (array) $this->cache->getMultiple($useGenerator ? $generator($keys) : $keys);
 
         $this->assertEquals($keys, array_keys($result));
 
@@ -99,7 +81,7 @@ class NullSimpleCacheTest extends AbstractSimpleCacheTest
      * @dataProvider data_ttls
      * @group slow
      */
-    public function test_setMultiple_expire(int|DateInterval $ttl, bool $expired)
+    public function test_setMultiple_expire(int|DateInterval|null $ttl, bool $expired)
     {
         $keys = ["key1", "key2", "key3"];
         $values = array_combine($keys, ["value1", "value2", "value3"]);
@@ -111,47 +93,26 @@ class NullSimpleCacheTest extends AbstractSimpleCacheTest
 
         $result = $this->cache->getMultiple($keys);
 
-        foreach ($result as $value) {
+        foreach ($result as $key => $value) {
             $this->assertNull($value);
         }
     }
 
     /**
-     * @depends test_setGetMultiple
+     * @depends      test_setGetMultiple
+     * @dataProvider data_multipleValues
      */
-    public function test_deleteMultiple()
+    public function test_deleteMultiple(array $keys, array $values, $generator, bool $useGenerator)
     {
-        $keys = ["key1", "key2", "key3"];
-        $values = array_combine($keys, ["value1", "value2", "value3"]);
+        $deleted_keys = [$keys[0], $keys[2]];
+        $default = "tea";
 
         $this->cache->setMultiple($values);
-        $this->cache->deleteMultiple(["key1", "key3"]);
-        $result = $this->cache->getMultiple($keys, "tea");
+        $this->cache->deleteMultiple($useGenerator ? $generator($deleted_keys) : $deleted_keys);
+        $result = $this->cache->getMultiple($keys, $default);
 
-        foreach ($result as $value) {
-            $this->assertEquals("tea", $value);
-        }
-    }
-
-    /**
-     * @depends test_setGetMultiple
-     */
-    public function test_deleteMultiple_generator()
-    {
-        $keys = ["key1", "key2", "key3"];
-        $values = array_combine($keys, ["value1", "value2", "value3"]);
-
-        $generator = function () {
-            yield "key1";
-            yield "key3";
-        };
-
-        $this->cache->setMultiple($values);
-        $this->cache->deleteMultiple($generator());
-        $result = $this->cache->getMultiple(array_keys($values), "tea");
-
-        foreach ($result as $value) {
-            $this->assertEquals("tea", $value);
+        foreach ($result as $key => $value) {
+            $this->assertEquals($default, $value);
         }
     }
 
@@ -170,7 +131,7 @@ class NullSimpleCacheTest extends AbstractSimpleCacheTest
      * @dataProvider data_ttls
      * @group slow
      */
-    public function test_has_expire(int|DateInterval $ttl, bool $expired)
+    public function test_has_expire(int|DateInterval|null $ttl, bool $expired)
     {
         $this->cache->set("foo", "bar", $ttl);
 
