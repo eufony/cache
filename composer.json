@@ -1,7 +1,7 @@
 {
   "name": "eufony/cache",
   "description": "Essentials for getting started with PSR-6 and PSR-16 caching.",
-  "keywords": [ "eufony", "cache", "caching", "psr-6", "psr-16" ],
+  "keywords": [ "eufony", "cache", "psr-6", "psr-16" ],
   "type": "library",
   "license": "LGPL-3.0-or-later",
   "authors": [
