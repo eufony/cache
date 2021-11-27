@@ -1,6 +1,6 @@
 <?php
 /*
- * The Eufony Cache Package
+ * Testsuite for the Eufony Cache Package
  * Copyright (c) 2021 Alpin Gencer
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,13 +17,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Eufony\Cache;
+namespace Tests\Unit;
+
+use Eufony\Cache\ArrayCache;
+use Psr\Cache\CacheItemPoolInterface;
 
 /**
- * Thrown whenever an invalid argument is passed to any of the caching methods.
+ * PSR-6 unit tests for `\Eufony\Cache\ArrayCache`.
  */
-class InvalidArgumentException extends \InvalidArgumentException implements
-    \Psr\SimpleCache\InvalidArgumentException,
-    \Psr\Cache\InvalidArgumentException
+class ArrayCacheTest extends AbstractCacheTest
 {
+    /**
+     * @inheritDoc
+     */
+    public function getCache(): CacheItemPoolInterface
+    {
+        return new ArrayCache();
+    }
 }

@@ -22,28 +22,36 @@ namespace Eufony\Cache;
 use Psr\Cache\CacheItemInterface;
 
 /**
- * Provides a "black-hole" caching implementation.
+ * Provides a caching implementation using a PHP array.
  *
- * The caching method parameters go through the same validation as other
- * implementations, but nothing is actually cached.
+ * The cache items are stored in-memory on a per-process basis and will be
+ * cleared as soon as the PHP process finishes.
  */
-class NullCache extends AbstractCache
+class ArrayCache extends AbstractCache
 {
+    /**
+     * The PHP array used to store the cache items.
+     *
+     * @var CacheItem[] $items
+     */
+    protected array $items;
+
     /**
      * @inheritDoc
      */
     public function __construct()
     {
         parent::__construct();
+        $this->clear();
     }
 
     /**
      * @inheritDoc
      */
-    public function getItem(string $key): CacheItemInterface
+    public function getItem($key): CacheItemInterface
     {
         $key = $this->psr6_validateKey($key);
-        return new CacheItem($key);
+        return $this->hasItem($key) ? $this->items[$key] : new CacheItem($key);
     }
 
     /**
@@ -57,10 +65,10 @@ class NullCache extends AbstractCache
     /**
      * @inheritDoc
      */
-    public function hasItem(string $key): bool
+    public function hasItem($key): bool
     {
         $key = $this->psr6_validateKey($key);
-        return false;
+        return array_key_exists($key, $this->items);
     }
 
     /**
@@ -68,15 +76,17 @@ class NullCache extends AbstractCache
      */
     public function clear(): bool
     {
+        $this->items = [];
         return true;
     }
 
     /**
      * @inheritDoc
      */
-    public function deleteItem(string $key): bool
+    public function deleteItem($key): bool
     {
         $key = $this->psr6_validateKey($key);
+        unset($this->items[$key]);
         return true;
     }
 
@@ -93,6 +103,7 @@ class NullCache extends AbstractCache
      */
     public function save(CacheItemInterface $item): bool
     {
+        $this->items[$item->getKey()] = $item;
         return true;
     }
 
@@ -101,7 +112,7 @@ class NullCache extends AbstractCache
      */
     public function saveDeferred(CacheItemInterface $item): bool
     {
-        return true;
+        return $this->save($item);
     }
 
     /**
