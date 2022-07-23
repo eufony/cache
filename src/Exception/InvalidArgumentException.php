@@ -1,6 +1,6 @@
 <?php
 /*
- * The Eufony Cache Package
+ * Eufony Cache Utilities
  * Copyright (c) 2021 Alpin Gencer
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,8 @@
 namespace Eufony\Cache;
 
 /**
- * Thrown whenever an invalid argument is passed to any of the caching methods.
+ * Exception class thrown if an invalid argument is passed to any of the
+ * caching methods.
  */
 class InvalidArgumentException extends \InvalidArgumentException implements
     \Psr\SimpleCache\InvalidArgumentException,
