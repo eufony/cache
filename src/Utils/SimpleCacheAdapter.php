@@ -1,6 +1,6 @@
 <?php
 /*
- * The Eufony Cache Package
+ * Eufony Cache Utilities
  * Copyright (c) 2021 Alpin Gencer
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Eufony\Cache\Util;
+namespace Eufony\Cache\Utils;
 
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\SimpleCache\CacheInterface;
@@ -109,7 +109,7 @@ class SimpleCacheAdapter implements CacheInterface
         $keys = array_map(fn($key) => $this->psr16_validateKey($key), $keys);
 
         $items = $this->cache->getItems($keys);
-        return array_map(fn($item) => $item->isHit() ? $item->get() : $default, (array) $items);
+        return array_map(fn($item) => $item->isHit() ? $item->get() : $default, (array)$items);
     }
 
     /**
@@ -119,7 +119,7 @@ class SimpleCacheAdapter implements CacheInterface
     {
         $values = $this->psr16_validateIterable($values);
         $keys = array_map(fn($key) => $this->psr16_validateKey($key), array_keys($values));
-        $values = array_combine($keys, (array) array_values($values));
+        $values = array_combine($keys, (array)array_values($values));
 
         $items = $this->cache->getItems(array_keys($values));
         $success = true;

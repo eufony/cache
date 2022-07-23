@@ -1,6 +1,6 @@
 <?php
 /*
- * The Eufony Cache Package
+ * Eufony Cache Utilities
  * Copyright (c) 2021 Alpin Gencer
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@ namespace Eufony\Cache;
 use Psr\Cache\CacheItemInterface;
 
 /**
- * Provides a "black-hole" caching implementation.
+ * Provides a caching implementation based on the Null Object Pattern.
  *
  * The caching method parameters go through the same validation as other
  * implementations, but nothing is actually cached.
@@ -32,15 +32,7 @@ class NullCache extends AbstractCache
     /**
      * @inheritDoc
      */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getItem(string $key): CacheItemInterface
+    public function getItem($key): CacheItemInterface
     {
         $key = $this->psr6_validateKey($key);
         return new CacheItem($key);
@@ -57,7 +49,7 @@ class NullCache extends AbstractCache
     /**
      * @inheritDoc
      */
-    public function hasItem(string $key): bool
+    public function hasItem($key): bool
     {
         $key = $this->psr6_validateKey($key);
         return false;
@@ -74,7 +66,7 @@ class NullCache extends AbstractCache
     /**
      * @inheritDoc
      */
-    public function deleteItem(string $key): bool
+    public function deleteItem($key): bool
     {
         $key = $this->psr6_validateKey($key);
         return true;
@@ -93,7 +85,7 @@ class NullCache extends AbstractCache
      */
     public function save(CacheItemInterface $item): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -109,6 +101,6 @@ class NullCache extends AbstractCache
      */
     public function commit(): bool
     {
-        return true;
+        return false;
     }
 }

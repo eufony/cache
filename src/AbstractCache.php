@@ -1,6 +1,6 @@
 <?php
 /*
- * The Eufony Cache Package
+ * Eufony Cache Utilities
  * Copyright (c) 2021 Alpin Gencer
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,19 +19,20 @@
 
 namespace Eufony\Cache;
 
-use Eufony\Cache\Util\CacheTrait;
-use Eufony\Cache\Util\SimpleCacheAdapter;
+use Eufony\Cache\Utils\CacheTrait;
+use Eufony\Cache\Utils\SimpleCacheAdapter;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\SimpleCache\CacheInterface;
 
 /**
- * Provides an abstract caching implementation.
+ * Provides an abstract caching implementation that other implementations can
+ * inherit from.
  *
  * Implements both the PSR-6 and PSR-16 cache interfaces.
  * Inheriting classes only need to implement the PSR-6 interface methods; the
  * PSR-16 methods are implemented using a PSR-6 to PSR-16 adapter class.
  *
- * @see \Eufony\Cache\Util\SimpleCacheAdapter
+ * @see \Eufony\Cache\Utils\SimpleCacheAdapter
  */
 abstract class AbstractCache implements CacheItemPoolInterface, CacheInterface
 {
@@ -41,7 +42,7 @@ abstract class AbstractCache implements CacheItemPoolInterface, CacheInterface
      * The PSR-6 to PSR-16 adapter used to implement the PSR-16 caching
      * methods.
      *
-     * @var \Eufony\Cache\Util\SimpleCacheAdapter $adapter
+     * @var \Eufony\Cache\Utils\SimpleCacheAdapter $adapter
      */
     protected SimpleCacheAdapter $adapter;
 

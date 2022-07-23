@@ -1,6 +1,6 @@
 <?php
 /*
- * The Eufony Cache Package
+ * Eufony Cache Utilities
  * Copyright (c) 2021 Alpin Gencer
  *
  * This program is free software: you can redistribute it and/or modify
@@ -150,6 +150,6 @@ class CacheItem implements CacheItemInterface
      */
     public function expired(): bool
     {
-        return $this->expiration !== null && $this->expiration > time();
+        return $this->expiration !== null && $this->expiration >= time();
     }
 }
