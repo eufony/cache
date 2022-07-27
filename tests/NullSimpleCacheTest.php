@@ -1,6 +1,6 @@
 <?php
 /*
- * Testsuite for the Eufony Cache Package
+ * Eufony Cache Utilities
  * Copyright (c) 2021 Alpin Gencer
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Tests\Unit;
+namespace Eufony\Cache\Tests;
 
 use DateInterval;
 use Eufony\Cache\NullCache;
@@ -37,21 +37,29 @@ class NullSimpleCacheTest extends AbstractSimpleCacheTest
     }
 
     /**
-     * @dataProvider data_validCacheItems
+     * @dataProvider validCacheItems
      */
-    public function test_setGet(mixed $value)
+    public function testSetGet(mixed $value)
     {
         $this->cache->set("foo", $value);
         $this->assertEquals(null, $this->cache->get("foo"));
     }
 
     /**
-     * @depends      test_setGet
-     * @depends      test_setGet_notFound
-     * @dataProvider data_ttls
+     * @depends testSetGet
+     */
+    public function testSetGetChanged()
+    {
+        $this->markTestSkipped();
+    }
+
+    /**
+     * @depends      testSetGet
+     * @depends      testSetGetNotFound
+     * @dataProvider validTTLs
      * @group slow
      */
-    public function test_set_expire(int|DateInterval|null $ttl, bool $expired)
+    public function testSetExpire(int|DateInterval|null $ttl, bool $expired)
     {
         $this->cache->set("foo", "bar", $ttl);
 
@@ -62,12 +70,14 @@ class NullSimpleCacheTest extends AbstractSimpleCacheTest
     }
 
     /**
-     * @dataProvider data_multipleValues
+     * @dataProvider valuesForMultipleMethods
      */
-    public function test_setGetMultiple(array $keys, array $values, $generator, bool $useGenerator)
+    public function testSetGetMultiple(array $values, $generator, bool $useGenerator)
     {
+        $keys = array_keys($values);
+
         $this->cache->setMultiple($values);
-        $result = (array) $this->cache->getMultiple($useGenerator ? $generator($keys) : $keys);
+        $result = (array)$this->cache->getMultiple($useGenerator ? $generator($keys) : $keys);
 
         $this->assertEquals($keys, array_keys($result));
 
@@ -77,11 +87,11 @@ class NullSimpleCacheTest extends AbstractSimpleCacheTest
     }
 
     /**
-     * @depends      test_setGetMultiple
-     * @dataProvider data_ttls
+     * @depends      testSetGetMultiple
+     * @dataProvider validTTLs
      * @group slow
      */
-    public function test_setMultiple_expire(int|DateInterval|null $ttl, bool $expired)
+    public function testSetMultipleExpire(int|DateInterval|null $ttl, bool $expired)
     {
         $keys = ["key1", "key2", "key3"];
         $values = array_combine($keys, ["value1", "value2", "value3"]);
@@ -99,13 +109,14 @@ class NullSimpleCacheTest extends AbstractSimpleCacheTest
     }
 
     /**
-     * @depends      test_setGetMultiple
-     * @dataProvider data_multipleValues
+     * @depends      testSetGetMultiple
+     * @dataProvider valuesForMultipleMethods
      */
-    public function test_deleteMultiple(array $keys, array $values, $generator, bool $useGenerator)
+    public function testDeleteMultiple(array $values, $generator, bool $useGenerator)
     {
+        $keys = array_keys($values);
         $deleted_keys = [$keys[0], $keys[2]];
-        $default = "tea";
+        $default = "default";
 
         $this->cache->setMultiple($values);
         $this->cache->deleteMultiple($useGenerator ? $generator($deleted_keys) : $deleted_keys);
@@ -119,7 +130,7 @@ class NullSimpleCacheTest extends AbstractSimpleCacheTest
     /**
      * @depends test_setGet
      */
-    public function test_has()
+    public function testHas()
     {
         $this->cache->set("foo", "bar");
         $this->assertFalse($this->cache->has("foo"));
@@ -127,11 +138,11 @@ class NullSimpleCacheTest extends AbstractSimpleCacheTest
     }
 
     /**
-     * @depends      test_setGet
-     * @dataProvider data_ttls
+     * @depends      testSetGet
+     * @dataProvider validTTLs
      * @group slow
      */
-    public function test_has_expire(int|DateInterval|null $ttl, bool $expired)
+    public function testHasExpire(int|DateInterval|null $ttl, bool $expired)
     {
         $this->cache->set("foo", "bar", $ttl);
 
