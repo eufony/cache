@@ -1,6 +1,6 @@
 <?php
 /*
- * Testsuite for the Eufony Cache Package
+ * Eufony Cache Utilities
  * Copyright (c) 2021 Alpin Gencer
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,27 +17,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Tests\Unit;
+namespace Eufony\Cache\Tests;
 
-use PHPUnit\Framework\TestCase;
+use Eufony\Cache\NullCache;
 use Psr\Cache\CacheItemPoolInterface;
 
 /**
- * Provides an abstract PSR-6 implementation tester.
+ * PSR-6 unit tests for `\Eufony\Cache\NullCache`.
  */
-abstract class AbstractCacheTest extends TestCase
+class NullCacheTest extends AbstractCacheTest
 {
     /**
-     * The PSR-6 cache implementation to test.
-     *
-     * @var \Psr\Cache\CacheItemPoolInterface $cache
+     * @inheritDoc
      */
-    protected CacheItemPoolInterface $cache;
-
-    /**
-     * Returns a new instance of a PSR-6 cache implementation to test.
-     *
-     * @return \Psr\Cache\CacheItemPoolInterface
-     */
-    abstract public function getCache(): CacheItemPoolInterface;
+    public function getCache(): CacheItemPoolInterface
+    {
+        return new NullCache();
+    }
 }
