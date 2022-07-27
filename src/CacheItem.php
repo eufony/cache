@@ -100,7 +100,8 @@ class CacheItem implements CacheItemInterface
      */
     public function set($value): static
     {
-        $this->value = $value;
+        // Save a clone of the cache value
+        $this->value = unserialize(serialize($value));
         $this->isHit = true;
         return $this;
     }

@@ -30,9 +30,9 @@ use Psr\Cache\CacheItemInterface;
 class ArrayCache extends AbstractCache
 {
     /**
-     * The PHP array used to store the serialized cache items.
+     * The PHP array used to store the cache items.
      *
-     * @var string[] $items
+     * @var \Eufony\Cache\CacheItem[] $items
      */
     protected array $items;
 
@@ -53,7 +53,7 @@ class ArrayCache extends AbstractCache
         $key = $this->psr6_validateKey($key);
 
         if ($this->hasItem($key)) {
-            return unserialize($this->items[$key]);
+            return $this->items[$key];
         } else {
             // Delete expired items
             $this->deleteItem($key);
@@ -75,7 +75,7 @@ class ArrayCache extends AbstractCache
     public function hasItem($key): bool
     {
         $key = $this->psr6_validateKey($key);
-        return array_key_exists($key, $this->items) && !unserialize($this->items[$key])->expired();
+        return array_key_exists($key, $this->items) && !$this->items[$key]->expired();
     }
 
     /**
@@ -110,7 +110,7 @@ class ArrayCache extends AbstractCache
      */
     public function save(CacheItemInterface $item): bool
     {
-        $this->items[$item->getKey()] = serialize($item);
+        $this->items[$item->getKey()] = $item;
         return true;
     }
 
