@@ -10,6 +10,7 @@
       "email": "alpingencer@gmail.com"
     }
   ],
+  "abandoned": "symfony/cache",
   "minimum-stability": "stable",
   "require": {
     "php": "^8.0",
@@ -21,7 +22,8 @@
     "phpunit/phpunit": "^9.5"
   },
   "suggest": {
-    "psr/cache-implementation": "Virtual package for PSR-6 caching implementations."
+    "psr/cache-implementation": "Virtual package for PSR-6 caching implementations.",
+    "psr/simple-cache-implementation": "Virtual package for PSR-16 caching implementations."
   },
   "provide": {
     "psr/cache-implementation": "^1.0 || ^2.0 || ^3.0",
