@@ -1,10 +1,10 @@
-# Eufony Cache Utilities
+<h1 align="center">Eufony Cache Utilities</h1>
 
 <p align="center">
-  <img alt="Packagist Downloads" src="https://img.shields.io/packagist/dt/eufony/cache?label=Packagist%20Downloads">
-  <img alt="GitHub Stars" src="https://img.shields.io/github/stars/eufony/cache?label=GitHub%20Stars">
-  <img alt="Issues" src="https://img.shields.io/github/issues/eufony/cache/open?label=Issues">
-  <img alt="License" src="https://img.shields.io/github/license/eufony/cache?label=License">
+    <img alt="Packagist Downloads" src="https://img.shields.io/packagist/dt/eufony/cache?label=Packagist%20Downloads">
+    <img alt="GitHub Stars" src="https://img.shields.io/github/stars/eufony/cache?label=GitHub%20Stars">
+    <img alt="Issues" src="https://img.shields.io/github/issues/eufony/cache/open?label=Issues">
+    <img alt="License" src="https://img.shields.io/github/license/eufony/cache?label=License">
 </p>
 
 - GitHub: https://github.com/eufony/cache
