@@ -1,4 +1,4 @@
-<h1 align="center">Eufony Cache Utilities</h1>
+<h1 align="center">The Eufony Cache Package</h1>
 
 <p align="center">
     <img alt="Packagist Downloads" src="https://img.shields.io/packagist/dt/eufony/cache?label=Packagist%20Downloads">
