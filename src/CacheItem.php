@@ -19,6 +19,7 @@ namespace Eufony\Cache;
 use DateInterval;
 use DateTime;
 use DateTimeInterface;
+use Eufony\Cache\Pool\AbstractCache;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 
@@ -67,7 +68,7 @@ class CacheItem implements CacheItemInterface
      * Class constructor.
      * Requires the parent cache pool and the cache key.
      *
-     * @param \Eufony\Cache\AbstractCache $cache
+     * @param \Eufony\Cache\Pool\AbstractCache $cache
      * @param string $key
      */
     public function __construct(AbstractCache $cache, string $key)

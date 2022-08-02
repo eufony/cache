@@ -29,10 +29,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Eufony\Cache\Tests\Integration;
+namespace Eufony\Cache\Tests\Integration\Pool;
 
 use Cache\IntegrationTests\CachePoolTest;
-use Eufony\Cache\ArrayCache;
+use Eufony\Cache\Pool\ArrayCache;
 use Psr\Cache\CacheItemPoolInterface;
 
 /**

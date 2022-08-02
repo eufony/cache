@@ -14,25 +14,34 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Eufony\Cache;
+namespace Eufony\Cache\Pool;
 
+use Eufony\Cache\CacheItem;
+use Eufony\Cache\Marshaller\MarshallerInterface;
 use Psr\Cache\CacheItemInterface;
 
 /**
- * Provides a caching implementation based on the Null Object Pattern.
+ * Provides a caching implementation using a PHP array.
  *
- * The caching method parameters go through the same validation as other
- * implementations, but nothing is actually cached.
+ * The cache items are stored in-memory on a per-process basis and will be
+ * cleared as soon as the PHP process finishes.
  */
-class NullCache extends AbstractCache
+class ArrayCache extends AbstractCache
 {
     /**
-     * Class constructor.
-     * Creates a new cache pool.
+     * The PHP array used to store the cache items.
+     *
+     * @var \Eufony\Cache\CacheItem[] $items
      */
-    public function __construct()
+    protected array $items;
+
+    /**
+     * @inheritDoc
+     */
+    public function __construct(?MarshallerInterface $marshaller = null)
     {
-        parent::__construct();
+        parent::__construct($marshaller);
+        $this->items = [];
     }
 
     /**
@@ -41,6 +50,12 @@ class NullCache extends AbstractCache
     public function getItem($key): CacheItemInterface
     {
         $key = $this->psr6_validateKey($key);
+
+        if ($this->hasItem($key)) {
+            // Return a clone of the original item
+            return clone $this->items[$key];
+        }
+
         return new CacheItem($this, $key);
     }
 
@@ -58,7 +73,18 @@ class NullCache extends AbstractCache
     public function hasItem($key): bool
     {
         $key = $this->psr6_validateKey($key);
-        return false;
+
+        if (!array_key_exists($key, $this->items)) {
+            return false;
+        }
+
+        // Delete expired items
+        if ($this->items[$key]->expired()) {
+            $this->deleteItem($key);
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -66,6 +92,7 @@ class NullCache extends AbstractCache
      */
     public function clear(): bool
     {
+        $this->items = [];
         return true;
     }
 
@@ -75,6 +102,7 @@ class NullCache extends AbstractCache
     public function deleteItem($key): bool
     {
         $key = $this->psr6_validateKey($key);
+        unset($this->items[$key]);
         return true;
     }
 
@@ -83,8 +111,7 @@ class NullCache extends AbstractCache
      */
     public function deleteItems(array $keys): bool
     {
-        $keys = array_map(fn($key) => $this->deleteItem($key), $keys);
-        return true;
+        return !in_array(false, array_map(fn($key) => $this->deleteItem($key), $keys));
     }
 
     /**
@@ -92,7 +119,8 @@ class NullCache extends AbstractCache
      */
     public function save(CacheItemInterface $item): bool
     {
-        return false;
+        $this->items[$item->getKey()] = $item;
+        return true;
     }
 
     /**
@@ -100,7 +128,7 @@ class NullCache extends AbstractCache
      */
     public function saveDeferred(CacheItemInterface $item): bool
     {
-        return false;
+        return $this->save($item);
     }
 
     /**
@@ -108,6 +136,6 @@ class NullCache extends AbstractCache
      */
     public function commit(): bool
     {
-        return false;
+        return true;
     }
 }

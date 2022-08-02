@@ -14,10 +14,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Eufony\Cache\Tests\Integration;
+namespace Eufony\Cache\Tests\Integration\Pool;
 
 use Cache\IntegrationTests\CachePoolTest;
-use Eufony\Cache\NullCache;
+use Eufony\Cache\Pool\NullCache;
 use Psr\Cache\CacheItemPoolInterface;
 
 /**
@@ -61,7 +61,7 @@ class NullCacheTest extends CachePoolTest
     ];
 
     /**
-     * @return NullCache
+     * @inheritDoc
      */
     public function createCachePool(): CacheItemPoolInterface
     {

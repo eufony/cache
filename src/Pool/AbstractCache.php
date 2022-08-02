@@ -14,7 +14,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Eufony\Cache;
+namespace Eufony\Cache\Pool;
 
 use Eufony\Cache\Marshaller\MarshallerInterface;
 use Eufony\Cache\Marshaller\SerializeMarshaller;
