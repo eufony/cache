@@ -35,7 +35,7 @@ trait CacheTrait
      * Casts cache keys that are instances of `Stringable` to strings.
      * Returns the typecast key for easy processing.
      *
-     * Throws an `\Eufony\Cache\InvalidArgumentException` if the cache key is
+     * Throws a `\Eufony\Cache\InvalidArgumentException` if the cache key is
      * invalid.
      *
      * Example usage:

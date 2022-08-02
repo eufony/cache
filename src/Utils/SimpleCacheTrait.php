@@ -37,7 +37,7 @@ trait SimpleCacheTrait
      * Casts cache keys that are instances of `Stringable` to strings.
      * Returns the typecast key for easy processing.
      *
-     * Throws an `\Eufony\Cache\InvalidArgumentException` if the cache key is
+     * Throws a `\Eufony\Cache\InvalidArgumentException` if the cache key is
      * invalid.
      *
      * Example usage:
@@ -140,6 +140,6 @@ trait SimpleCacheTrait
             throw new InvalidArgumentException("Argument must be an array or Traversable");
         }
 
-        return is_array($iterable) ? $iterable : iterator_to_array($iterable);
+        return is_array($iterable) ? $iterable : iterator_to_array($iterable, preserve_keys: true);
     }
 }

@@ -14,21 +14,30 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Eufony\Cache\Tests;
-
-use Eufony\Cache\NullCache;
-use Psr\Cache\CacheItemPoolInterface;
+namespace Eufony\Cache\Marshaller;
 
 /**
- * PSR-6 unit tests for `\Eufony\Cache\NullCache`.
+ * Provides a marshaller implementation using the PHP built-in `serialize()`
+ * and `unserialize()` methods.
+ *
+ * Because the PSR-6 standards require that all cache values must be
+ * serializable, this type of marshalling is compatible with all valid values.
  */
-class NullCacheTest extends AbstractCacheTest
+class SerializeMarshaller implements MarshallerInterface
 {
     /**
      * @inheritDoc
      */
-    public function getCache(): CacheItemPoolInterface
+    public function marshall(mixed $value): string
     {
-        return new NullCache();
+        return serialize($value);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function unmarshall(string $value): mixed
+    {
+        return unserialize($value);
     }
 }

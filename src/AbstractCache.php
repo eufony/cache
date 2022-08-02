@@ -16,105 +16,63 @@
 
 namespace Eufony\Cache;
 
+use Eufony\Cache\Marshaller\MarshallerInterface;
+use Eufony\Cache\Marshaller\SerializeMarshaller;
 use Eufony\Cache\Utils\CacheTrait;
-use Eufony\Cache\Utils\SimpleCacheAdapter;
 use Psr\Cache\CacheItemPoolInterface;
-use Psr\SimpleCache\CacheInterface;
 
 /**
  * Provides an abstract caching implementation that other implementations can
  * inherit from.
  *
- * Implements both the PSR-6 and PSR-16 cache interfaces.
- * Inheriting classes only need to implement the PSR-6 interface methods; the
- * PSR-16 methods are implemented using a PSR-6 to PSR-16 adapter class.
- *
- * @see \Eufony\Cache\Utils\SimpleCacheAdapter
+ * Accepts a marshaller implementation that is used by a `CacheItem` to prepare
+ * cache values for storage.
  */
-abstract class AbstractCache implements CacheItemPoolInterface, CacheInterface
+abstract class AbstractCache implements CacheItemPoolInterface
 {
     use CacheTrait;
 
     /**
-     * The PSR-6 to PSR-16 adapter used to implement the PSR-16 caching
-     * methods.
+     * The marshaller implementation used to prepare the cache values.
      *
-     * @var \Eufony\Cache\Utils\SimpleCacheAdapter $adapter
+     * Defaults to an instance of `SerializeMarshaller`.
+     *
+     * @var \Eufony\Cache\Marshaller\MarshallerInterface $marshaller
      */
-    protected SimpleCacheAdapter $adapter;
+    protected MarshallerInterface $marshaller;
 
     /**
      * Class constructor.
+     * Creates a new cache pool.
      *
-     * Wraps this implementation of a PSR-6 cache in an adapter class to
-     * additionally provide a PSR-16 implementation.
+     * Optionally accepts a marshaller implementation.
+     * If no marshaller is given, defaults to a `SerializeMarshaller`.
+     *
+     * @param \Eufony\Cache\Marshaller\MarshallerInterface|null $marshaller
      */
-    public function __construct()
+    public function __construct(?MarshallerInterface $marshaller = null)
     {
-        $this->adapter = new SimpleCacheAdapter($this);
+        $this->marshaller = $marshaller ?? new SerializeMarshaller();
     }
 
     /**
-     * @inheritDoc
+     * Class destructor.
+     * Commits any deferred cache items still left in the queue.
      */
-    public function get($key, $default = null): mixed
+    public function __destruct()
     {
-        return $this->adapter->get($key, $default);
+        $this->commit();
     }
 
     /**
-     * @inheritDoc
+     * Getter for the marshaller.
+     *
+     * Returns the current marshaller.
+     *
+     * @return \Eufony\Cache\Marshaller\MarshallerInterface
      */
-    public function set($key, $value, $ttl = null): bool
+    public function marshaller(): MarshallerInterface
     {
-        return $this->adapter->set($key, $value, $ttl);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function delete($key): bool
-    {
-        return $this->adapter->delete($key);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function clear(): bool
-    {
-        return $this->adapter->clear();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getMultiple($keys, $default = null): iterable
-    {
-        return $this->adapter->getMultiple($keys, $default);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setMultiple($values, $ttl = null): bool
-    {
-        return $this->adapter->setMultiple($values, $ttl);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function deleteMultiple($keys): bool
-    {
-        return $this->adapter->deleteMultiple($keys);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function has($key): bool
-    {
-        return $this->adapter->has($key);
+        return $this->marshaller;
     }
 }

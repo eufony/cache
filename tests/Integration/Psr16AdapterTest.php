@@ -14,21 +14,30 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Eufony\Cache\Tests;
+namespace Eufony\Cache\Tests\Integration;
 
+use Cache\IntegrationTests\SimpleCacheTest;
+use Eufony\Cache\Adapter\Psr16Adapter;
 use Eufony\Cache\ArrayCache;
 use Psr\SimpleCache\CacheInterface;
 
 /**
- * PSR-16 unit tests for `\Eufony\Cache\ArrayCache`.
+ * PSR-16 integration tests for `\Eufony\Cache\Adapter\Psr16Adapter`.
  */
-class ArraySimpleCacheTest extends AbstractSimpleCacheTest
+class Psr16AdapterTest extends SimpleCacheTest
 {
     /**
      * @inheritDoc
      */
-    public function getCache(): CacheInterface
+    protected $skippedTests = [
+        "testBasicUsageWithLongKey" => "Keys longer than 64 characters are unsupported.",
+    ];
+
+    /**
+     * @inheritDoc
+     */
+    public function createSimpleCache(): CacheInterface
     {
-        return new ArrayCache();
+        return new Psr16Adapter(new ArrayCache());
     }
 }

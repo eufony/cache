@@ -14,8 +14,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace Eufony\Cache\Utils;
+namespace Eufony\Cache\Adapter;
 
+use Eufony\Cache\Utils\SimpleCacheTrait;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\SimpleCache\CacheInterface;
 
@@ -23,7 +24,7 @@ use Psr\SimpleCache\CacheInterface;
  * Provides a wrapper class to adapt a PSR-6 caching implementation to the
  * PSR-16 standards.
  */
-class SimpleCacheAdapter implements CacheInterface
+class Psr16Adapter implements CacheInterface
 {
     use SimpleCacheTrait;
 

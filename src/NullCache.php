@@ -27,12 +27,21 @@ use Psr\Cache\CacheItemInterface;
 class NullCache extends AbstractCache
 {
     /**
+     * Class constructor.
+     * Creates a new cache pool.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
      * @inheritDoc
      */
     public function getItem($key): CacheItemInterface
     {
         $key = $this->psr6_validateKey($key);
-        return new CacheItem($key);
+        return new CacheItem($this, $key);
     }
 
     /**
@@ -74,7 +83,8 @@ class NullCache extends AbstractCache
      */
     public function deleteItems(array $keys): bool
     {
-        return !in_array(false, array_map(fn($key) => $this->deleteItem($key), $keys));
+        $keys = array_map(fn($key) => $this->deleteItem($key), $keys);
+        return true;
     }
 
     /**
@@ -90,7 +100,7 @@ class NullCache extends AbstractCache
      */
     public function saveDeferred(CacheItemInterface $item): bool
     {
-        return true;
+        return false;
     }
 
     /**

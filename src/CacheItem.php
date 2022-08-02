@@ -20,12 +20,20 @@ use DateInterval;
 use DateTime;
 use DateTimeInterface;
 use Psr\Cache\CacheItemInterface;
+use Psr\Cache\CacheItemPoolInterface;
 
 /**
  * Provides an implementation of the PSR-6 cache item interface.
  */
 class CacheItem implements CacheItemInterface
 {
+    /**
+     * The parent cache pool that this cache item belongs to.
+     *
+     * @var \Psr\Cache\CacheItemPoolInterface $cache
+     */
+    protected CacheItemPoolInterface $cache;
+
     /**
      * Stores the cache key.
      *
@@ -57,15 +65,27 @@ class CacheItem implements CacheItemInterface
 
     /**
      * Class constructor.
+     * Requires the parent cache pool and the cache key.
      *
-     * Creates a new cache item instance with the given key.
-     *
+     * @param \Eufony\Cache\AbstractCache $cache
      * @param string $key
      */
-    public function __construct(string $key)
+    public function __construct(AbstractCache $cache, string $key)
     {
+        $this->cache = $cache;
         $this->key = $key;
         $this->isHit = false;
+        $this->expiration = null;
+    }
+
+    /*
+     * Magic method for cloning the object.
+     * Ensures that cloning a cache item creates a deep copy of all of its
+     * properties.
+     */
+    public function __clone(): void
+    {
+        unserialize(serialize($this));
     }
 
     /**
@@ -81,7 +101,12 @@ class CacheItem implements CacheItemInterface
      */
     public function get(): mixed
     {
-        return $this->isHit ? $this->value : null;
+        if (!$this->isHit) {
+            return null;
+        }
+
+        // Unmarshall the value using the cache pool's marshaller
+        return $this->cache->marshaller()->unmarshall($this->value);
     }
 
     /**
@@ -97,8 +122,8 @@ class CacheItem implements CacheItemInterface
      */
     public function set($value): static
     {
-        // Save a clone of the cache value
-        $this->value = unserialize(serialize($value));
+        // Marshall the value using the cache pool's marshaller
+        $this->value = $this->cache->marshaller()->marshall($value);
         $this->isHit = true;
         return $this;
     }
@@ -148,6 +173,6 @@ class CacheItem implements CacheItemInterface
      */
     public function expired(): bool
     {
-        return $this->expiration !== null && $this->expiration < time();
+        return $this->expiration !== null && $this->expiration <= time();
     }
 }

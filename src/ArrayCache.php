@@ -16,6 +16,7 @@
 
 namespace Eufony\Cache;
 
+use Eufony\Cache\Marshaller\MarshallerInterface;
 use Psr\Cache\CacheItemInterface;
 
 /**
@@ -36,10 +37,10 @@ class ArrayCache extends AbstractCache
     /**
      * @inheritDoc
      */
-    public function __construct()
+    public function __construct(?MarshallerInterface $marshaller = null)
     {
-        parent::__construct();
-        $this->clear();
+        parent::__construct($marshaller);
+        $this->items = [];
     }
 
     /**
@@ -50,12 +51,11 @@ class ArrayCache extends AbstractCache
         $key = $this->psr6_validateKey($key);
 
         if ($this->hasItem($key)) {
-            return $this->items[$key];
-        } else {
-            // Delete expired items
-            $this->deleteItem($key);
-            return new CacheItem($key);
+            // Return a clone of the original item
+            return clone $this->items[$key];
         }
+
+        return new CacheItem($this, $key);
     }
 
     /**
@@ -72,7 +72,18 @@ class ArrayCache extends AbstractCache
     public function hasItem($key): bool
     {
         $key = $this->psr6_validateKey($key);
-        return array_key_exists($key, $this->items) && !$this->items[$key]->expired();
+
+        if (!array_key_exists($key, $this->items)) {
+            return false;
+        }
+
+        // Delete expired items
+        if ($this->items[$key]->expired()) {
+            $this->deleteItem($key);
+            return false;
+        }
+
+        return true;
     }
 
     /**
