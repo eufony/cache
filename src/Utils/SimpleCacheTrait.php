@@ -20,6 +20,7 @@ use DateInterval;
 use DateTime;
 use Eufony\Cache\InvalidArgumentException;
 use Stringable;
+use TypeError;
 
 /**
  * Provides common functionality for implementing the PSR-16 standards.
@@ -132,7 +133,7 @@ trait SimpleCacheTrait
      * ```
      *
      * @param $iterable
-     * @return array
+     * @return mixed[]
      */
     public function psr16_validateIterable($iterable): array
     {
@@ -140,6 +141,26 @@ trait SimpleCacheTrait
             throw new InvalidArgumentException("Argument must be an array or Traversable");
         }
 
-        return is_array($iterable) ? $iterable : iterator_to_array($iterable, preserve_keys: true);
+        // Manually copy iterable to array
+        $result = [];
+
+        foreach ($iterable as $key => $value) {
+            try {
+                // Explicitly check against floats, since PHP otherwise does an implicit conversion
+                if (is_float($key)) {
+                    throw new TypeError();
+                }
+
+                if (array_key_exists($key, $result)) {
+                    $result[] = $value;
+                } else {
+                    $result[$key] = $value;
+                }
+            } catch (TypeError $e) {
+                throw new InvalidArgumentException("Invalid array key", previous: $e);
+            }
+        }
+
+        return $result;
     }
 }
