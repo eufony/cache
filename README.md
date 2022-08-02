@@ -14,9 +14,6 @@
 *eufony/cache provides the most trivial implementations of PSR-6 and PSR-16 as well as other essentials for getting
 started with caching.*
 
-> **Deprecation notice:** This project has been archived and marked as read-only. We suggest using
-> [*symfony/cache*](https://github.com/symfony/cache) instead.
-
 ## License
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public
