@@ -37,7 +37,6 @@ class Psr16Adapter implements CacheInterface
 
     /**
      * Class constructor.
-     *
      * Wraps a PSR-6 cache to adapt it to the PSR-16 standards.
      *
      * @param \Psr\Cache\CacheItemPoolInterface $cache
