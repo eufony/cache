@@ -52,7 +52,7 @@ class TagAwarePsr16Adapter extends Psr16Adapter implements TagAwareInterface
     /**
      * @inheritDoc
      */
-    public function tag(array|string $keys, string|array $tags): bool
+    public function tag(string|array $keys, string|array $tags): bool
     {
         return $this->cache->tag($keys, $tags);
     }
