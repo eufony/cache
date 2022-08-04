@@ -29,9 +29,10 @@ use Psr\Cache\CacheItemInterface;
 class ArrayCache extends AbstractCache
 {
     /**
-     * The PHP array used to store the cache items.
+     * The PHP array used to store marshalled nested arrays containing the cache
+     * values and expirations.
      *
-     * @var \Eufony\Cache\CacheItem[] $items
+     * @var string[] $items
      */
     protected array $items;
 
@@ -51,40 +52,21 @@ class ArrayCache extends AbstractCache
     {
         $key = $this->psr6_validateKey($key);
 
-        if ($this->hasItem($key)) {
-            // Return a clone of the original item
-            return clone $this->items[$key];
-        }
-
-        return new CacheItem($this, $key);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getItems(array $keys = []): iterable
-    {
-        return array_combine($keys, array_map(fn($key) => $this->getItem($key), $keys));
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function hasItem($key): bool
-    {
-        $key = $this->psr6_validateKey($key);
-
+        // Check if cache miss
         if (!array_key_exists($key, $this->items)) {
-            return false;
+            return new CacheItem($key, false);
         }
+
+        // Unmarshall the cached value
+        $item = $this->marshaller->unmarshall($this->items[$key]);
 
         // Delete expired items
-        if ($this->items[$key]->expired()) {
+        if ($item['expiration'] !== null && $item['expiration'] <= time()) {
             $this->deleteItem($key);
-            return false;
+            return new CacheItem($key, false);
         }
 
-        return true;
+        return new CacheItem($key, true, $item['value']);
     }
 
     /**
@@ -109,33 +91,11 @@ class ArrayCache extends AbstractCache
     /**
      * @inheritDoc
      */
-    public function deleteItems(array $keys): bool
-    {
-        return !in_array(false, array_map(fn($key) => $this->deleteItem($key), $keys));
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function save(CacheItemInterface $item): bool
     {
-        $this->items[$item->getKey()] = $item;
-        return true;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function saveDeferred(CacheItemInterface $item): bool
-    {
-        return $this->save($item);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function commit(): bool
-    {
+        // Marshall the value before storage
+        $stored = ["value" => $item->value(), "expiration" => $item->expiration()];
+        $this->items[$item->getKey()] = $this->marshaller->marshall($stored);
         return true;
     }
 }

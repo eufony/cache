@@ -19,22 +19,13 @@ namespace Eufony\Cache;
 use DateInterval;
 use DateTime;
 use DateTimeInterface;
-use Eufony\Cache\Pool\AbstractCache;
 use Psr\Cache\CacheItemInterface;
-use Psr\Cache\CacheItemPoolInterface;
 
 /**
  * Provides an implementation of the PSR-6 cache item interface.
  */
 class CacheItem implements CacheItemInterface
 {
-    /**
-     * The parent cache pool that this cache item belongs to.
-     *
-     * @var \Psr\Cache\CacheItemPoolInterface $cache
-     */
-    protected CacheItemPoolInterface $cache;
-
     /**
      * Stores the cache key.
      *
@@ -66,27 +57,48 @@ class CacheItem implements CacheItemInterface
 
     /**
      * Class constructor.
-     * Requires the parent cache pool and the cache key.
+     * Requires the cache key, whether the cache item is a hit, and, if it is a
+     * hit, the cache value.
      *
-     * @param \Eufony\Cache\Pool\AbstractCache $cache
      * @param string $key
+     * @param bool $isHit
+     * @param mixed|null $value
+     *
+     * @internal This object SHOULD NOT be instantiated other than by the library.
      */
-    public function __construct(AbstractCache $cache, string $key)
+    public function __construct(string $key, bool $isHit, mixed $value = null)
     {
-        $this->cache = $cache;
         $this->key = $key;
-        $this->isHit = false;
+        $this->isHit = $isHit;
+
+        if ($isHit) {
+            $this->value = $value;
+        }
+
         $this->expiration = null;
     }
 
-    /*
-     * Magic method for cloning the object.
-     * Ensures that cloning a cache item creates a deep copy of all of its
-     * properties.
+    /**
+     * Returns the cache value, similar to `get()`.
+     *
+     * Unlike `get()` returns the value even if the item is not a hit.
+     *
+     * @return mixed
      */
-    public function __clone(): void
+    public function value(): mixed
     {
-        unserialize(serialize($this));
+        return $this->value ?? null;
+    }
+
+    /**
+     * Returns the UNIX timestamp of when the cache item expires, or null if the
+     * item does not expire.
+     *
+     * @return int|null
+     */
+    public function expiration(): int|null
+    {
+        return $this->expiration;
     }
 
     /**
@@ -106,8 +118,7 @@ class CacheItem implements CacheItemInterface
             return null;
         }
 
-        // Unmarshall the value using the cache pool's marshaller
-        return $this->cache->marshaller()->unmarshall($this->value);
+        return $this->value;
     }
 
     /**
@@ -123,9 +134,7 @@ class CacheItem implements CacheItemInterface
      */
     public function set($value): static
     {
-        // Marshall the value using the cache pool's marshaller
-        $this->value = $this->cache->marshaller()->marshall($value);
-        $this->isHit = true;
+        $this->value = $value;
         return $this;
     }
 
@@ -163,17 +172,5 @@ class CacheItem implements CacheItemInterface
 
         $this->expiration = $expiration;
         return $this;
-    }
-
-    /**
-     * Returns whether this item has expired.
-     *
-     * A cache item with an unset (`null`) expiration time will be cached forever.
-     *
-     * @return bool
-     */
-    public function expired(): bool
-    {
-        return $this->expiration !== null && $this->expiration <= time();
     }
 }

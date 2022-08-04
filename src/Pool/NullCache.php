@@ -42,24 +42,7 @@ class NullCache extends AbstractCache
     public function getItem($key): CacheItemInterface
     {
         $key = $this->psr6_validateKey($key);
-        return new CacheItem($this, $key);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getItems(array $keys = []): iterable
-    {
-        return array_combine($keys, array_map(fn($key) => $this->getItem($key), $keys));
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function hasItem($key): bool
-    {
-        $key = $this->psr6_validateKey($key);
-        return false;
+        return new CacheItem($key, false);
     }
 
     /**
@@ -82,24 +65,7 @@ class NullCache extends AbstractCache
     /**
      * @inheritDoc
      */
-    public function deleteItems(array $keys): bool
-    {
-        $keys = array_map(fn($key) => $this->deleteItem($key), $keys);
-        return true;
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function save(CacheItemInterface $item): bool
-    {
-        return false;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function saveDeferred(CacheItemInterface $item): bool
     {
         return false;
     }

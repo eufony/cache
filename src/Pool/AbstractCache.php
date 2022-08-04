@@ -19,14 +19,20 @@ namespace Eufony\Cache\Pool;
 use Eufony\Cache\Marshaller\MarshallerInterface;
 use Eufony\Cache\Marshaller\SerializeMarshaller;
 use Eufony\Cache\Utils\CacheTrait;
+use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 
 /**
  * Provides an abstract caching implementation that other implementations can
  * inherit from.
  *
- * Accepts a marshaller implementation that is used by a `CacheItem` to prepare
- * cache values for storage.
+ * Accepts a marshaller implementation that is used to prepare cache values for
+ * storage.
+ *
+ * Additionally provides generic implementations of some methods of
+ * `CacheItemPoolInterface`.
+ * Inheriting classes may overload these for a more optimized implementation
+ * specific to the caching backend.
  */
 abstract class AbstractCache implements CacheItemPoolInterface
 {
@@ -74,5 +80,46 @@ abstract class AbstractCache implements CacheItemPoolInterface
     public function marshaller(): MarshallerInterface
     {
         return $this->marshaller;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getItems(array $keys = []): iterable
+    {
+        return array_combine($keys, array_map(fn($key) => $this->getItem($key), $keys));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function hasItem($key): bool
+    {
+        $item = $this->getItem($key);
+        return $item->isHit();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function deleteItems(array $keys): bool
+    {
+        return !in_array(false, array_map(fn($key) => $this->deleteItem($key), $keys));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function saveDeferred(CacheItemInterface $item): bool
+    {
+        return $this->save($item);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function commit(): bool
+    {
+        return true;
     }
 }
