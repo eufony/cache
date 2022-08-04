@@ -23,10 +23,8 @@ use Psr\Cache\CacheItemPoolInterface;
  * Provides a wrapper class to adapt a PSR-6 caching implementation to support
  * both the PSR-16 standards and `\Eufony\Cache\TagAwareInterface`.
  *
- * > **Deprecation notice:** This class is a temporary solution until a more
- * > robust proxy management solution is implemented by the Eufony project.
- *
- * @deprecated
+ * @deprecated This class is a temporary solution until a more robust proxy
+ * management solution is implemented by the Eufony project.
  */
 class TagAwarePsr16Adapter extends Psr16Adapter implements TagAwareInterface
 {
