@@ -51,7 +51,7 @@ use Eufony\Cache\Pool\ArrayCache;
 use Psr\Cache\CacheItemPoolInterface;
 
 /**
- * PSR-6 integration tests for `\Eufony\Cache\ArrayCache`.
+ * PSR-6 integration tests for `\Eufony\Cache\Pool\ArrayCache`.
  */
 class ArrayCacheTest extends CachePoolTest
 {

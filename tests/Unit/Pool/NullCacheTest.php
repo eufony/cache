@@ -36,7 +36,7 @@ use Eufony\Cache\Pool\NullCache;
 use Psr\Cache\CacheItemPoolInterface;
 
 /**
- * PSR-6 integration tests for `\Eufony\Cache\NullCache`.
+ * PSR-6 integration tests for `\Eufony\Cache\Pool\NullCache`.
  */
 class NullCacheTest extends CachePoolTest
 {
