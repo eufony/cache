@@ -47,7 +47,7 @@ namespace Eufony\Cache\Tests\Integration\Adapter;
 
 use Cache\IntegrationTests\CachePoolTest;
 use Eufony\Cache\Adapter\TagAwareAdapter;
-use Eufony\Cache\Pool\ArrayCache;
+use Eufony\Cache\Pool\ApcuCache;
 use Eufony\Cache\TagAwareInterface;
 use Psr\Cache\CacheItemPoolInterface;
 
@@ -75,7 +75,7 @@ class TagAwareAdapterTest extends CachePoolTest
      */
     public function createCachePool(): CacheItemPoolInterface&TagAwareInterface
     {
-        return new TagAwareAdapter(new ArrayCache());
+        return new TagAwareAdapter(new ApcuCache());
     }
 
     public function testBasicUsageWithTags(): void
