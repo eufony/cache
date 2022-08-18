@@ -36,7 +36,7 @@ trait CacheProxyTrait
     /**
      * Returns the internal PSR-6 cache.
      *
-     * @return CacheItemPoolInterface
+     * @return \Psr\Cache\CacheItemPoolInterface
      */
     public function cache(): CacheItemPoolInterface
     {
