@@ -17,6 +17,6 @@
 require __DIR__ . "/../vendor/autoload.php";
 
 echo "\n";
-echo "Testsuite for the Eufony Cache Package by Alpin Gencer and contributors.\n";
+echo "Testsuite for the Eufony Cache Package by Alpin H. Gencer and contributors.\n";
 echo "Using php.ini file: '" . php_ini_loaded_file() . "'\n";
 echo "\n";
