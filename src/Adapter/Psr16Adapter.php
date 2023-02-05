@@ -49,7 +49,7 @@ class Psr16Adapter implements CacheInterface
     /**
      * Returns the internal PSR-6 cache.
      *
-     * @return CacheItemPoolInterface
+     * @return \Psr\Cache\CacheItemPoolInterface
      */
     public function cache(): CacheItemPoolInterface
     {
