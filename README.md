@@ -22,6 +22,57 @@
 *eufony/cache provides the most trivial implementations of PSR-6 and PSR-16 as well as other essentials for getting
 started with caching.*
 
+*eufony/cache* is a small PHP library that handles basic caching needs without overcomplicating things. It implements
+the simplest kinds cache pools, supporting both the [PSR-6](https://www.php-fig.org/psr/psr-6/)
+and [PSR-16](https://www.php-fig.org/psr/psr-16/) standards, plus:
+
+- Adapter classes to convert between PSR-6 and PSR-16 caching implementations.
+- Utility classes to aid in the implementation of other caching backends.
+- An extension to the caching standards using a tag-based cache invalidation technique.
+- A framework to hook in to and modify the cache values on their way in and out of the pool.
+
+Interested? [Here's how to get started.](#getting-started)
+
+## Getting started
+
+### Installation
+
+*eufony/cache* is released as a [Packagist](https://packagist.org/) package and can be easily installed
+via [Composer](https://getcomposer.org/) with:
+
+    composer require "eufony/cache"
+
+### Basic Usage
+
+*For a more detailed documentation, see [here](docs).*
+
+*eufony/cache* provides three different caching implementations:
+
+```php
+// An in-memory cache pool using a PHP array.
+$cache = new ArrayCache();
+
+// An in-memory cache pool using the `apcu` extension,
+// which can share cache values between processes on the same host.
+$cache = new ApcuCache();
+
+// A fake cache based on the Null Object Pattern.
+$cache = new NullCache();
+```
+
+You can extend these cache pools using [marshallers](https://en.wikipedia.org/wiki/Marshalling_(computer_science)) and a
+tag-based cache invalidation interface.
+
+It also provides adapter classes to convert between PSR-6 and PSR-16 cache implementations:
+
+```php
+// Convert from PSR-6 to PSR-16.
+$cache = new Psr16Adapter(/* ... */);
+
+// Convert from PSR-16 to PSR-6.
+$cache = new Psr6Adapter(/* ... */);
+```
+
 ## Contributing
 
 Found a bug or a missing feature? You can report it over at the [issue tracker](https://github.com/eufony/cache/issues).
