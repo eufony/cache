@@ -99,7 +99,7 @@ class ApcuCache extends AbstractCache
     {
         // Marshall the value before storage
         $value = $this->marshaller->marshall($item->value());
-        $ttl = $item->expiration() === null ? 0 : $item->expiration() - time();
+        $ttl = $item->expiration() === null ? 0 : $item->expiration() - time() - 1;
         return apcu_store($item->getKey(), $value, $ttl);
     }
 }
