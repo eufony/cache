@@ -21,10 +21,12 @@
     "phpunit/phpunit": "^9.5"
   },
   "suggest": {
+    "eufony/marshaller-implementation": "Virtual package for Marshaller implementations.",
     "psr/cache-implementation": "Virtual package for PSR-6 caching implementations.",
     "psr/simple-cache-implementation": "Virtual package for PSR-16 caching implementations."
   },
   "provide": {
+    "eufony/marshaller-implementation": "self.version",
     "psr/cache-implementation": "^1.0 || ^2.0 || ^3.0",
     "psr/simple-cache-implementation": "^1.0 || ^2.0 || ^3.0"
   },
