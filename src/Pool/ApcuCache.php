@@ -18,7 +18,7 @@ namespace Eufony\Cache\Pool;
 
 use Eufony\Cache\CacheException;
 use Eufony\Cache\CacheItem;
-use Eufony\Cache\Marshaller\MarshallerInterface;
+use Eufony\Marshaller\MarshallerInterface;
 use Psr\Cache\CacheItemInterface;
 
 /**

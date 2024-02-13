@@ -60,8 +60,8 @@ $cache = new ApcuCache();
 $cache = new NullCache();
 ```
 
-You can extend these cache pools using [marshallers](https://en.wikipedia.org/wiki/Marshalling_(computer_science)) and a
-tag-based cache invalidation interface.
+You can extend these cache pools using [marshallers](https://github.com/eufony/marshaller) and a tag-based cache
+invalidation interface.
 
 It also provides adapter classes to convert between PSR-6 and PSR-16 cache implementations:
 

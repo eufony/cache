@@ -16,9 +16,9 @@
 
 namespace Eufony\Cache\Pool;
 
-use Eufony\Cache\Marshaller\MarshallerInterface;
-use Eufony\Cache\Marshaller\SerializeMarshaller;
 use Eufony\Cache\Utils\CacheTrait;
+use Eufony\Marshaller\MarshallerInterface;
+use Eufony\Marshaller\SerializeMarshaller;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 
@@ -41,9 +41,9 @@ abstract class AbstractCache implements CacheItemPoolInterface
     /**
      * The marshaller implementation used to prepare the cache values.
      *
-     * Defaults to an instance of `SerializeMarshaller`.
+     * Defaults to an instance of `\Eufony\Marshaller\SerializeMarshaller`.
      *
-     * @var \Eufony\Cache\Marshaller\MarshallerInterface $marshaller
+     * @var \Eufony\Marshaller\MarshallerInterface $marshaller
      */
     protected MarshallerInterface $marshaller;
 
@@ -54,7 +54,7 @@ abstract class AbstractCache implements CacheItemPoolInterface
      * Optionally accepts a marshaller implementation.
      * If no marshaller is given, defaults to a `SerializeMarshaller`.
      *
-     * @param \Eufony\Cache\Marshaller\MarshallerInterface|null $marshaller
+     * @param \Eufony\Marshaller\MarshallerInterface|null $marshaller
      */
     public function __construct(?MarshallerInterface $marshaller = null)
     {
@@ -75,7 +75,7 @@ abstract class AbstractCache implements CacheItemPoolInterface
      *
      * Returns the current marshaller.
      *
-     * @return \Eufony\Cache\Marshaller\MarshallerInterface
+     * @return \Eufony\Marshaller\MarshallerInterface
      */
     public function marshaller(): MarshallerInterface
     {
